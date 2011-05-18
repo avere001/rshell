@@ -1,0 +1,227 @@
+Script started on Mon 18 May 2015 08:46:21 AM PDT
+~
+avere001@hammer $ ls[K[Kcd rshell
+~/rshell
+avere001@hammer $ bin/rshell
+$ #basic output redirection
+$ echo fris   irst > asd
+$ echo      cat asd
+first
+$ ls > asd
+$ cat asd
+asd
+bin
+LICENSE
+Makefile
+README.md
+src
+tests
+$ echo second >> asd
+$ cat asd
+asd
+bin
+LICENSE
+Makefile
+README.md
+src
+tests
+second
+$ echo third >> das
+$ cat das
+third
+$ cat < asd
+asd
+bin
+LICENSE
+Makefile
+README.md
+src
+tests
+second
+$ cat das
+third
+$ cat < sad   das
+third
+$ 
+$ #basic piping
+$ echo something | cat
+something
+$ ls | cat | cat | cat | cat
+asd
+bin
+das
+LICENSE
+Makefile
+README.md
+src
+tests
+$ cat < asd | tr A-Z a-z | tee newOutputFile1 | tr a-z A-Z > newOutputFile2
+$ cat new	o OutputFile1
+asd
+bin
+license
+makefile
+readme.md
+src
+tests
+second
+$ cat newOutputFile2
+ASD
+BIN
+LICENSE
+MAKEFILE
+README.MD
+SRC
+TESTS
+SECOND
+$ #we   # 
+$ 
+$ #weair   ird space ing
+$ echo 1t>asd
+$ cat asd
+1t
+$ echo 2t             >              asd
+$ cat asd
+2t
+$ echo 3t              >asd
+$ cat asd
+3t
+$ ^[[A    echo 54  45 t          5 4t  >              asd
+$ cat asd
+4t
+$ 
+$ 
+$ echp o 1t>>asd
+$ cat asd
+4t
+1t
+$ echo 2t          >>asd
+$ echo 3t>>           asd
+$ echo t 4t        >>            asd
+$ cat asd
+4t
+1t
+2t
+3t
+4t
+$ cat <  <asd
+4t
+1t
+2t
+3t
+4t
+$ cat    <           asd
+4t
+1t
+2t
+3t
+4t
+$ cat<      asd
+4t
+1t
+2t
+3t
+4t
+$ cat             <asd
+4t
+1t
+2t
+3t
+4t
+$ ls|cat                |cat     |cat|      cat    |cat         |cat
+asd
+bin
+das
+LICENSE
+Makefile
+newOutputFile1
+newOutputFile2
+README.md
+src
+tests
+$ cat  <asd       |       tr-  A-x Z a-z|trr  ee newOut	putFile1|   tr a-x A-   z  z A-Z>newP OutputFile2
+$ cat new	 wOutputFile1
+4t
+1t
+2t
+3t
+4t
+$ cat newOutputFile2
+4T
+1T
+2T
+3T
+4T
+$ echo first > f1 > f2 >> f3 #sgo  hould only make f3
+$ cat f1
+cat: f1: No such file or directory
+$ cat f2
+cat: f2: No such file or directory
+$ cat f3
+first
+$ cat < asd < 3 f3
+command failed: cat: found multiple input redirection symbols
+$ #in  n r non sensible redirc ection
+$ echo first > asd | cat
+error: stdout output redirection on command other than last
+$ cat | cat < asd
+error: stdin input redirection on command other than first
+$ #redirection with connection rs
+$ echo first > asd ; ls **  * && echo test || pw
+asd  das  LICENSE   newOutputFile1  README.md  tests
+bin  f3   Makefile  newOutputFile2  src
+test
+$ echo second >> asd; ls && ecg ho test || pwe d
+asd  das  LICENSE   newOutputFile1  README.md  tests
+bin  f3   Makefile  newOutputFile2  src
+test
+$ cat < asd ; ls **    **  %%  && echo test || pwd
+first
+second
+asd  das  LICENSE   newOutputFile1  README.md  tests
+bin  f3   Makefile  newOutputFile2  src
+test
+$ echo earlier > asd; echo later >> asd && cat < asd
+earlier
+later
+$ ###exter  t ra credot  it###
+$ echo test 1> asd 2  > qwe
+$ cat asd
+test
+$ cat qwe
+$ echo other 1>> qwe
+$ echo once more 2>> asd
+once more
+$ cat qwe
+other
+$ cat asd
+test
+$ echo > asd
+$ g++ asd 2> bad_cpp
+$ g cat bad_cpp
+asd: file not recognized: File truncated
+collect2: ld returned 1 exit status
+$ g__ asd 2>          h g_ ++ asd 2>> bad_cpp
+$ cat bad_cpp
+asd: file not recognized: File truncated
+collect2: ld returned 1 exit status
+asd: file not recognized: File truncated
+collect2: ld returned 1 exit status
+$ cat <<< te          
+$ #input redirection with strings
+$ cat << t   t  < test
+test$ #### after thoughts###
+$ 
+$ # echo test >>> testy
+$ ech   cat << as         l cat testy
+cat: testy: No such file or directory
+$ cat << asd
+command failed: cat: found multiple input redirection symbols
+$ ..  ls | | cat
+Syntax error near '|': command must precede connector/pipe
+$ exit
+~/rshell
+avere001@hammer $ exit
+exit
+
+Script done on Mon 18 May 2015 09:01:14 AM PDT

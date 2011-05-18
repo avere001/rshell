@@ -67,6 +67,60 @@ be
 chained!
 ```
 
+### output redirection
+The output of a command may be redirected to a file like so:
+```
+$ echo abc123 > test
+$ cat test
+abc123
+```
+
+To append to an existing file use `>>` instead
+```
+$ echo abc > test
+$ cat test
+abc
+$ echo abc > test
+$ cat test
+abc
+$ echo 123 >> test
+$ cat test
+abc123
+```
+
+Additionally, you may specify the file descriptor to redirect by using `#>` or `#>>`
+
+### input redirection
+You may use a file as input to a command like so:
+```
+$ echo abc > test
+$ cat < test
+abc
+```
+
+You may also use a string directly by using `<<<` instead
+```
+$ cat <<< test
+test
+```
+
+### piping
+You may pipe the output of one command to the input of another like so:
+```
+$ echo test | cat
+test
+$ #you can chain them
+$ echo test | tr a-z A-Z | cat
+TEST
+```
+
+piping may be combined with redirection and connectors
+```
+$ echo test > abc
+$ cat < abc | cat > def ; cat < def | tr a-z  A-Z | cat
+TEST
+```
+
 ### Comments
 Any text on a line following a `#` will be ignored.
 
@@ -88,5 +142,6 @@ $ exit
 
 
 ## Bugs:
-- There is no way to pass `;`, `&&`, `||`, `&`, `|`, `#`, or whitespace as arguments
+- There is no way to pass `;`, `&&`, `||`, `&`, `|`, `#`, `>`, `<`,  or whitespace as arguments
+- using >>> will redirect to a file called > rather than error
 - There is no way to change current working directory
