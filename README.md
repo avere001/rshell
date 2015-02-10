@@ -78,7 +78,7 @@ this won't be ignored
 
 ### Quitting rshell
 In order to properly close rshell, simply type exit just like any other command.
-exit will ignore any arguments passed to it
+exit will ignore any arguments passed to it. Additionally any commands connected after exit is called will not be executed
 ```
 $ exit
 ```
@@ -88,5 +88,5 @@ $ exit
 
 
 ## Bugs:
-There is no way to pass `;`, `&&`, `||`, `&`, `|`, `#`, or whitespace as arguments
-There is no way to change current working directory
+- There is no way to pass `;`, `&&`, `||`, `&`, `|`, `#`, or whitespace as arguments
+- There is no way to change current working directory
