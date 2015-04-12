@@ -57,7 +57,7 @@ bool parseLine(vector<vector<string>> &args, vector<string> &connectors)
     stringstream ss(line);
     string input = "";
     while (ss >> input) {
-        if (input == ";")
+        if (input == ";" || input == "&&" || input == "||")
         {
             if (curargs.size() == 0)
             {
@@ -106,10 +106,13 @@ int main(int argc, char **argv)
         printPrompt(cout); 
         if (parseLine(argsv,connectors))
         {
-            int failure = 0;
+            bool failure = 0;
             for (size_t i = 0; i < argsv.size(); ++i) {
                 auto &args = argsv.at(i);
-                if (i == 0 || connectors.at(i-1) == ";")
+                if ((i == 0) || (connectors.at(i-1) == ";") ||
+                        (connectors.at(i-1) == "&&" && !failure) ||
+                        (connectors.at(i-1) == "||" && failure)) 
+
                 {
                     if (args.at(0) == "exit") return 0;
                     runCommand(args);
