@@ -8,7 +8,6 @@ using namespace std;
 
 int main(int argc, char **argv)
 {
-    string cmd = "";
     vector<string> args;
     string input = "";
     string line = "";
@@ -17,11 +16,7 @@ int main(int argc, char **argv)
     stringstream ss(line);
 
     while (ss >> input) {
-
-        if (cmd == "")
-            cmd = input;
-        else
-            args.push_back(input);
+        args.push_back(input);
     }
 
     vector <char *> args_cstr(args.size() + 1);
@@ -33,6 +28,6 @@ int main(int argc, char **argv)
     }
     args_cstr.push_back(NULL);
 
-    execvp(cmd.c_str(),&args_cstr[0]);
+    execvp(args_cstr[0],&args_cstr[0]);
     return 0;
 }
