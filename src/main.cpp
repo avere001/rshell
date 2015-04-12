@@ -9,7 +9,7 @@ using namespace std;
 int main(int argc, char **argv)
 {
     string cmd = "";
-    vector<char*> args;
+    vector<string> args;
     string input = "";
     string line = "";
     
@@ -21,10 +21,18 @@ int main(int argc, char **argv)
         if (cmd == "")
             cmd = input;
         else
-            args.push_back(&input[0]);
+            args.push_back(input);
     }
-    args.push_back(NULL);
 
-    execvp(cmd.c_str(),&args[0]);
+    vector <char *> args_cstr(args.size() + 1);
+    for (size_t i = 0; i < args.size(); ++i)
+    {
+        args_cstr[i] = &args[i][0];
+        cout << args[i] << endl;
+        cout << args_cstr[i] << endl;
+    }
+    args_cstr.push_back(NULL);
+
+    execvp(cmd.c_str(),&args_cstr[0]);
     return 0;
 }
