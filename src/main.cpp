@@ -89,17 +89,17 @@ int runCommand(vector<string> &args)
     pid_t pid = fork();
     if (pid == 0)
     {
-        return execvp(args_cstr[0],&args_cstr[0]);
+        exit(execvp(args_cstr[0],&args_cstr[0]));
     }
     else
     {
         waitpid(pid, &status, 0);
+        return status;
     }
 }
 
 int main(int argc, char **argv)
 {
-  
     while (true) {
         vector<vector<string>> argsv;
         vector<string> connectors;
@@ -115,7 +115,7 @@ int main(int argc, char **argv)
 
                 {
                     if (args.at(0) == "exit") return 0;
-                    runCommand(args);
+                    failure = runCommand(args);
                 }
             }
         }
