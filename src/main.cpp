@@ -1,3 +1,4 @@
+#include <algorithm>
 #include<cstdlib>
 #include <iostream>
 #include <sys/types.h>
@@ -25,12 +26,13 @@ void printPrompt(ostream &os)
 string formatLine(const string &line, const string &delim)
 {
     ostringstream ss("");
-    size_t found = 0;
+    size_t found = line.find(delim);
     size_t prev_found = 0;
-    while ((found = line.find(delim, found+1)) != string::npos)
+    while (found != string::npos)
     {
-        ss << line.substr(prev_found, found - prev_found) << " " << delim << " ";
-        prev_found = found + 1;
+        ss << line.substr(prev_found, found-prev_found) << " " << delim << " ";
+        prev_found = found + delim.size();
+        found = line.find(delim, found+delim.size());
     }
     ss << line.substr(prev_found,line.size() -  prev_found);
     return ss.str();
@@ -45,7 +47,6 @@ void printVect(vector<T> &v)
     }
 }
 
-//return is success of parsing
 bool parseLine(vector<vector<string>> &args, vector<string> &connectors)
 {
     string line = "";
@@ -53,6 +54,8 @@ bool parseLine(vector<vector<string>> &args, vector<string> &connectors)
 
     vector<string> curargs;
     line = formatLine(line, ";");
+    line = formatLine(line, "&&");
+    line = formatLine(line, "||");
 
     stringstream ss(line);
     string input = "";
@@ -67,6 +70,12 @@ bool parseLine(vector<vector<string>> &args, vector<string> &connectors)
             connectors.push_back(input);
             args.push_back(curargs);
             curargs.clear();
+        }
+        else if (input.find("&") != string::npos || input.find("|") != string::npos)
+        {
+            size_t i = min(input.find("&"), input.find("|"));
+            cerr << "Syntax error near '" << input[i] << "': invalid connector" << endl;
+            return false;
         }
         else
         {
