@@ -1,4 +1,7 @@
+#include<cstdlib>
 #include <iostream>
+#include <sys/types.h>
+#include <sys/wait.h>
 #include <unistd.h>
 #include <vector>
 #include <sstream>
@@ -32,15 +35,37 @@ void parseLine(vector<string> &args)
     }
 }
 
-int main(int argc, char **argv)
+void runCommand(vector<string> &args)
 {
-    vector<string> args;
-  
-    printPrompt(cout); 
-    parseLine(args);
     vector <char *> args_cstr(args.size() + 1);
     toCStrVector(args_cstr, args);  
-    
-    execvp(args_cstr[0],&args_cstr[0]);
+
+
+    int status = 0;
+    pid_t pid = fork();
+    if (pid == 0)
+    {
+        int error = execvp(args_cstr[0],&args_cstr[0]);
+        if (error)
+        {
+            exit(0); //do nothing
+        }
+    }
+    else
+    {
+        waitpid(pid, &status, 0);
+    }
+}
+
+int main(int argc, char **argv)
+{
+  
+    while (true) {
+        vector<string> args;
+        printPrompt(cout); 
+        parseLine(args);       
+        if (args[0] == "exit") return 0;
+        runCommand(args);
+    }
     return 0;
 }
