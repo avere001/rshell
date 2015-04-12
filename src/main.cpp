@@ -6,6 +6,16 @@
 
 using namespace std;
 
+void toCStrVector(vector<char *> &buffer, vector<string> &original)
+{
+    for (size_t i = 0; i < original.size(); ++i)
+    {
+        buffer[i] = &original[i][0];
+    }
+    buffer.push_back(NULL);
+}
+    
+
 int main(int argc, char **argv)
 {
     vector<string> args;
@@ -20,14 +30,8 @@ int main(int argc, char **argv)
     }
 
     vector <char *> args_cstr(args.size() + 1);
-    for (size_t i = 0; i < args.size(); ++i)
-    {
-        args_cstr[i] = &args[i][0];
-        cout << args[i] << endl;
-        cout << args_cstr[i] << endl;
-    }
-    args_cstr.push_back(NULL);
-
+    toCStrVector(args_cstr, args);  
+    
     execvp(args_cstr[0],&args_cstr[0]);
     return 0;
 }
