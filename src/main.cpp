@@ -38,15 +38,6 @@ string formatLine(const string &line, const string &delim)
     return ss.str();
 }
 
-template<typename T>
-void printVect(vector<T> &v)
-{
-    for (auto &e : v)
-    {
-        cout << e << endl;
-    }
-}
-
 bool parseLine(vector<vector<string>> &args, vector<string> &connectors)
 {
     string line = "";
@@ -89,7 +80,7 @@ bool parseLine(vector<vector<string>> &args, vector<string> &connectors)
     return true;
 }
 
-int runCommand(vector<string> &args)
+bool runCommand(vector<string> &args)
 {
     vector <char *> args_cstr(args.size() + 1);
     toCStrVector(args_cstr, args);  
@@ -98,12 +89,17 @@ int runCommand(vector<string> &args)
     pid_t pid = fork();
     if (pid == 0)
     {
-        exit(execvp(args_cstr[0],&args_cstr[0]));
+        execvp(args_cstr[0],&args_cstr[0]);
+        //on failure
+        stringstream ss("");
+        ss << "command failed: " <<  args_cstr[0];
+        perror(ss.str().c_str());
+        exit(errno);
     }
     else
     {
         waitpid(pid, &status, 0);
-        return status;
+        return status == 0;
     }
 }
 
@@ -115,16 +111,16 @@ int main(int argc, char **argv)
         printPrompt(cout); 
         if (parseLine(argsv,connectors))
         {
-            bool failure = 0;
+            bool success = true;
             for (size_t i = 0; i < argsv.size(); ++i) {
                 auto &args = argsv.at(i);
                 if ((i == 0) || (connectors.at(i-1) == ";") ||
-                        (connectors.at(i-1) == "&&" && !failure) ||
-                        (connectors.at(i-1) == "||" && failure)) 
+                        (connectors.at(i-1) == "&&" && success) ||
+                        (connectors.at(i-1) == "||" && !success)) 
 
                 {
                     if (args.at(0) == "exit") return 0;
-                    failure = runCommand(args);
+                    success = runCommand(args);
                 }
             }
         }
