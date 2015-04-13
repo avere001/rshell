@@ -38,10 +38,18 @@ string formatLine(const string &line, const string &delim)
     return ss.str();
 }
 
+
+
 bool parseLine(vector<vector<string>> &args, vector<string> &connectors)
 {
     string line = "";
     getline(cin,line);
+
+    if (line.find("#") != string::npos)
+    {
+        line = line.substr(0,line.find("#"));
+    }
+    cout << line << endl;
 
     vector<string> curargs;
     line = formatLine(line, ";");
