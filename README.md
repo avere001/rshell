@@ -25,9 +25,9 @@ Notes on syntax:
 - Connectors in the beginning of a line are invalid and will throw an error
 - Connectors at the end of a line will simply be ignored.
 
-`;` -  runs the command following the connector always
-`&&` - runs the command following the connector only if the previously executed command resulted in a success
-`||` - runs the command following the connector only if the previously executed command resulted in a failure
+- `;` -  runs the command following the connector always
+- `&&` - runs the command following the connector only if the previously executed command resulted in a success
+- `||` - runs the command following the connector only if the previously executed command resulted in a failure
 
 Note:
 Command are evaluated from left to right.
@@ -48,7 +48,11 @@ $ true || echo command executed
 $ false || echo command executed
 command executed
 $ false ; echo commands && echo can || echo not && echo be ; echo chained!
-commands can be chained!
+commands
+can
+be
+chained!
+```
 
 ### Comments
 Any text on a line following a `#` will be ignored.
