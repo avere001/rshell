@@ -2,10 +2,22 @@
 A lightweight shell written in CS100
 
 ## Installing
+To install rshell simply run the following commands in any terminal:
+```
+$ git clone  https://github.com/avere001/rshell.git
+$ cd rshell
+$ git checkout hw0
+$ make
+```
 
+To run rshell simply run:
+```
+$ bin/rshell
+```
 
 ## Usage
-rshell can run any program located in `PATH`.
+rshell can run any program located in `PATH` or your current directory.
+
 The format for running a program is as follows:
 ```
 $ command [argument 1] [argument 2] ...
@@ -18,24 +30,25 @@ The format is as follows:
 ```
 $ command1 [arguments1] [connector] [command2] [arguments2] ...
 ```
-Notes on syntax:
+####Notes on syntax:
 - Connectors need not be seperated from commands by any whitespace.
 - Connectors must be immediately preceded by a command.
 - Connectors followed immediately by another connector are invalid and will throw an error
 - Connectors in the beginning of a line are invalid and will throw an error
 - Connectors at the end of a line will simply be ignored.
 
+#### Valid connectors 
 - `;` -  runs the command following the connector always
 - `&&` - runs the command following the connector only if the previously executed command resulted in a success
 - `||` - runs the command following the connector only if the previously executed command resulted in a failure
 
-Note:
-Command are evaluated from left to right.
+####Notes:
+Commands are evaluated from left to right.
 If a command doesn't exist or otherwise fails to execute, it will result in a failure.
 The exception is that if a command is ignored because of a connector, the success is determined by the previously executed command.
 Otherwise, If the command exists and successfully executes, then the success is determined by the return of the command (0 = success, anything else = failure)
 
-example:
+####example:
 ```
 $ true; echo command executed
 command executed
@@ -57,7 +70,7 @@ chained!
 ### Comments
 Any text on a line following a `#` will be ignored.
 
-example:
+####example:
 ```
 $ echo this won't be ignored #but this will!
 this won't be ignored
