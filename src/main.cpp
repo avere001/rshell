@@ -110,7 +110,12 @@ bool runCommand(vector<string> &args)
     }
     else
     {
-        waitpid(pid, &status, 0);
+        auto error = waitpid(pid, &status, 0);
+        if (error == -1)
+        {
+             perror("waitpid");
+             return false;
+        }
         return status == 0;
     }
 }
