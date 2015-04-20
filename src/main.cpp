@@ -49,7 +49,6 @@ bool parseLine(vector<vector<string>> &args, vector<string> &connectors)
     {
         line = line.substr(0,line.find("#"));
     }
-    cout << line << endl;
 
     vector<string> curargs;
     line = formatLine(line, ";");
@@ -94,15 +93,20 @@ bool runCommand(vector<string> &args)
     toCStrVector(args_cstr, args);  
 
     int status = 0;
-    pid_t pid = fork();
-    if (pid == 0)
+    auto pid = fork();
+    if (pid == -1)
+    {
+        perror("fork");
+        return false;
+    }
+    else if (pid == 0)
     {
         execvp(args_cstr[0],&args_cstr[0]);
         //on failure
         stringstream ss("");
         ss << "command failed: " <<  args_cstr[0];
         perror(ss.str().c_str());
-        exit(errno);
+        _exit(errno);
     }
     else
     {
