@@ -100,7 +100,7 @@ void list_dir(string const &d, vector<string> &files, bool all_flag)
         }
         
         string curr_name = curr->d_name;
-        if ((curr_name != "." && curr_name != "..") || all_flag)
+        if (curr_name.at(0) != '.' || all_flag)
         {
             files.push_back(curr_name);
         }
@@ -172,18 +172,35 @@ void print_files(vector<string> files, bool long_flag)
 
 void add_directory(vector<DirNode> &dirvect, string d, bool all_flag) 
 { 
-
+    DirNode dn(d);
+    list_dir(d, dn.files, all_flag);
+    dirvect.push_back(dn);
 }
 
 void recurse_directory(vector<DirNode> &dirvect, string d, bool all_flag)
 {
-    
+    DirNode root(d);
+    list_dir(d, root.files, all_flag);
+    dirvect.push_back(root);
 
+    for (auto subd : root.files)
+    {
+        string subd_full = d + "/" + subd;
+        if (is_dir(subd_full) && (subd != ".." && subd != "."))
+        {
+            recurse_directory(dirvect, subd_full, all_flag);
+        }
+    }
 }
 
 void print_directories(vector<DirNode> const &dirvect, bool long_flag)
 {
-
+    for (auto &d : dirvect)
+    {
+        cout << endl;
+        cout << d.dirname << ":" << endl;
+        print_files(d.files, long_flag);
+    }
 }
 
 int main(int argc, char **argv)
