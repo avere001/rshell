@@ -5,6 +5,8 @@
 #include <iostream>
 #include <vector>
 #include <iomanip>
+#include <sys/types.h>
+#include <sys/stat.h>
 
 using namespace std;
 
@@ -29,8 +31,21 @@ struct DirNode
 //returns whether the file *resembles* a directory
 bool is_dir(string file)
 {
-    //TODO: implement
-    return false;
+    struct stat s;
+    stat(file.c_str(), &s);
+    return S_ISDIR(s.st_mode);
+}
+
+//returns whether the file is accessible
+bool can_access(string file)
+{
+    struct stat s;
+    if (stat(file.c_str(), &s) == -1)
+    {
+        perror("stat");
+        return false;
+    }
+    return true;
 }
 
 void set_flags(char* flags, bool &long_flag, bool &recursive_flag, bool &all_flag)
@@ -72,7 +87,6 @@ void list_dir(string const &d, vector<string> &files, bool all_flag)
     struct dirent *prev = new dirent;
     struct dirent *curr = nullptr;
 
-    //walk through directories
     while (true)
     {
         if (readdir_r(d_ptr, prev, &curr) != 0)
@@ -110,7 +124,7 @@ void parse_arguments(int argc, char** argv,
         {
             set_flags(&argv[i][1], long_flag, recursive_flag, all_flag);
         }
-        else
+        else if (can_access(argv[i])) 
         {
             if (is_dir(argv[i]))
             {
@@ -187,11 +201,14 @@ int main(int argc, char **argv)
 
     if (files.size() > 0)
     {
+        //TODO check if file exists
         print_files(files, long_flag);
     }
     else if (directories.size() == 1 && !recursive_flag)
     {
-        //print contents and quit 
+        list_dir(directories.at(0), files, all_flag);
+        print_files(files, long_flag);
+        return 0; 
     }
 //    else if (directories.size() == 0 && !recursive_flag)
 //    {
