@@ -25,6 +25,14 @@ struct DirNode
  *
  *
  */
+
+//returns whether the file *resembles* a directory
+bool is_dir(string file)
+{
+    //TODO: implement
+    return false;
+}
+
 void set_flags(char* flags, bool &long_flag, bool &recursive_flag, bool &all_flag)
 {
     while ((*flags) != '\0')
@@ -49,6 +57,42 @@ void set_flags(char* flags, bool &long_flag, bool &recursive_flag, bool &all_fla
         }
         flags++;
     }
+}
+
+void list_dir(string const &d, vector<string> &files, bool all_flag)
+{
+    DIR* d_ptr = opendir(d.c_str());
+    if (d_ptr == NULL)
+    {
+        cerr << "error opening " << d << endl;
+        perror("opendir");
+        return;
+    }
+
+    struct dirent *prev = new dirent;
+    struct dirent *curr = nullptr;
+
+    //walk through directories
+    while (true)
+    {
+        if (readdir_r(d_ptr, prev, &curr) != 0)
+        {
+            perror("readdir_r");
+        }
+
+        if (curr == nullptr)
+        {
+            break;
+        }
+        
+        string curr_name = curr->d_name;
+        if ((curr_name != "." && curr_name != "..") || all_flag)
+        {
+            files.push_back(curr_name);
+        }
+    }
+
+    delete prev;
 }
 
 /*
@@ -127,8 +171,9 @@ void print_files(vector<string> files, bool long_flag)
     
 }
 
-void add_directory(vector<DirNode> &dirvect, string d, bool all_flag)
-{
+void add_directory(vector<DirNode> &dirvect, string d, bool all_flag) { 
+    
+
 
 }
 
