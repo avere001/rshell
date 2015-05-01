@@ -1,6 +1,7 @@
 #include<algorithm>
 #include <iostream>
 #include <vector>
+#include <iomanip>
 
 using namespace std;
 
@@ -27,9 +28,51 @@ void parse_arguments(int argc, char** argv,
     
 }
 
-void printFiles(vector<string> const &files, bool long_flag)
+//TODO: implement long_flag
+void print_files(vector<string> files, bool long_flag)
 {
+    sort(files.begin(), files.end());
 
+    size_t total_width = 30;
+    size_t max_width = 0;
+    for (auto &s : files)
+    {
+        if (s.size() > max_width)
+        {
+            max_width = s.size();
+        }
+    }
+
+    size_t files_per_line = total_width/(max_width + 1);
+    size_t files_per_col = files.size() / files_per_line;
+    
+    /*
+    //set up a table for printing the files
+    vector<vector<string>> filesvect(files_per_line);
+    for (auto &v : filesvect)
+    {
+        v.resize(files_per_col);
+    }
+
+    //assign the strings to appropriate rows/cols
+    int curr_col = 0;
+    for (size_t i = 0; i < files.size(); ++i)
+    {
+        filesvect.at(i / files_per_col).at(i % files_per_col) = files.at(i);
+    }
+    */
+    files.resize(files_per_line * (files_per_col + 1));
+
+    for (size_t i = 0; i < files_per_col + 1; ++i)
+    {
+        for (size_t j = 0; j < files_per_line; ++j)
+        {
+            cout << left << setw(max_width + 1) << files.at(j*(files_per_col+1) + i);
+        }
+        cout << endl;
+    }
+    
+    
 }
 
 void add_directory(vector<DirNode> &dirvect, string d, bool all_flag)
@@ -67,9 +110,9 @@ int main(int argc, char **argv)
     bool recursive_flag;
     bool all_flag;
 
-    vector<string> files;
+    vector<string> files;// = {"a", "b", "ccc", "dddddddd", "eeeee", "f", "g", "h", "i", "j"};
     vector<string> directories;
-
+    
     parse_arguments(argc, argv, 
                     long_flag, recursive_flag, all_flag,
                     files, directories);
@@ -104,6 +147,6 @@ int main(int argc, char **argv)
     sort(dirvect.begin(), dirvect.end());
 
     print_directories(dirvect, long_flag);
-
+    
     return 0;
 }
