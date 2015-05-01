@@ -1,4 +1,7 @@
-#include<algorithm>
+#include <unistd.h>
+#include<stddef.h>
+#include <dirent.h>
+#include <algorithm>
 #include <iostream>
 #include <vector>
 #include <iomanip>
@@ -18,6 +21,38 @@ struct DirNode
 
 /*
  *
+ *  helper functions
+ *
+ *
+ */
+void set_flags(char* flags, bool &long_flag, bool &recursive_flag, bool &all_flag)
+{
+    while ((*flags) != '\0')
+    {
+        char c = *flags;
+        switch (c)
+        {
+            case 'l':
+                long_flag = true;
+                break;
+            case 'R':
+                recursive_flag = true;
+                break;
+            case 'a':
+                all_flag = true;
+                break;
+            default:
+                cout << "error: " << c << " is not a valid flag" << endl;
+                cout << "valid flags are: l, R, a" << endl;
+                exit(1);
+                break;
+        }
+        flags++;
+    }
+}
+
+/*
+ *
  * major functions
  *
 */
@@ -25,7 +60,24 @@ void parse_arguments(int argc, char** argv,
                         bool &long_flag, bool &recursive_flag, bool &all_flag, 
                         vector<string> &files, vector<string> &directories)
 {
-    
+    for (int i = 1; i < argc; ++i)
+    {
+        if (argv[i][0] == '-' && argv[i][1] != '\0')
+        {
+            set_flags(&argv[i][1], long_flag, recursive_flag, all_flag);
+        }
+        else
+        {
+            if (is_dir(argv[i]))
+            {
+                directories.push_back(argv[i]);
+            }
+            else
+            {
+                files.push_back(argv[i]);
+            }
+        }
+    }
 }
 
 //TODO: implement long_flag
@@ -119,16 +171,16 @@ int main(int argc, char **argv)
 
     if (files.size() > 0)
     {
-        //print the files
+        print_files(files, long_flag);
     }
     else if (directories.size() == 1 && !recursive_flag)
     {
         //print contents and quit 
     }
-    else if (directories.size() == 0 && !recursive_flag)
-    {
-        //print the current directory
-    }
+//    else if (directories.size() == 0 && !recursive_flag)
+//    {
+//        print the current directory
+//    }
     
     vector<DirNode> dirvect;
 
