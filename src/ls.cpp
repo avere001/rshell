@@ -13,6 +13,7 @@
 #include <sys/stat.h>
 #include <boost/algorithm/string.hpp>
 #include <string>
+#include <sstream>
 
 using namespace std;
 
@@ -39,7 +40,17 @@ struct DirNode
  */
 
 //returns whether the file *resembles* a directory
-bool is_dir(string file)
+string base_name(string const &file)
+{
+    istringstream ss(file);
+    string tok;
+
+    while (getline(ss, tok, '/'));
+
+    return tok;
+}
+
+bool is_dir(string const &file)
 {
     struct stat s;
     if (stat(file.c_str(), &s) == -1)
@@ -116,7 +127,7 @@ void list_dir(string const &d, vector<string> &files, bool all_flag)
         string curr_name = curr->d_name;
         if (curr_name.at(0) != '.' || all_flag)
         {
-            files.push_back(curr_name);
+            files.push_back(d + "/" + curr_name);
         }
     }
 
@@ -284,6 +295,9 @@ bool is_exec(string const &file)
 
 void print_colored(string const &file, ssize_t w = 0)
 {
+    
+    string f = base_name(file);
+    
     if (is_dir(file))
     {
         setFG(CYAN);
@@ -292,15 +306,14 @@ void print_colored(string const &file, ssize_t w = 0)
     {
         setFG(GREEN);
     }
-    if (file.at(0) == '.')
+    if (f.at(0) == '.')
     {
         setBG(BLACK);
     }
 
-    
-    ssize_t pad_amt = max(static_cast<ssize_t>(0), w - static_cast<ssize_t>(file.size()));
+    ssize_t pad_amt = max(static_cast<ssize_t>(0), w - static_cast<ssize_t>(f.size()));
     string padding(pad_amt,' ');
-    cout << file;
+    cout << f;
     resetColor();
     cout << padding;
 }
@@ -342,13 +355,13 @@ void print_files(vector<string> files, bool long_flag)
     else
     {
 
-        size_t total_width = 30;
+        size_t total_width = 80;
         size_t max_width = 0;
         for (auto &s : files)
         {
-            if (s.size() > max_width)
+            if (base_name(s).size() > max_width)
             {
-                max_width = s.size();
+                max_width = base_name(s).size();
             }
         }
 
@@ -395,8 +408,9 @@ void recurse_directory(vector<DirNode> &dirvect, string d, bool all_flag)
     list_dir(d, root.files, all_flag);
     dirvect.push_back(root);
 
-    for (auto subd : root.files)
+    for (auto subdir : root.files)
     {
+        string subd = base_name(subdir);
         string subd_full = d + "/" + subd;
         if (is_dir(subd_full) && (subd != ".." && subd != "."))
         {
