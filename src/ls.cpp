@@ -297,15 +297,16 @@ void print_colored(string const &file, ssize_t w = 0)
 {
     
     string f = base_name(file);
-    
     if (is_dir(file))
     {
         setFG(CYAN);
+        f += "/";
     }
     else if (is_exec(file))
     {
         setFG(GREEN);
     }
+    
     if (f.at(0) == '.')
     {
         setBG(BLACK);
@@ -332,14 +333,17 @@ void print_files(vector<string> files, bool long_flag)
         size_t l_group = 0;
         size_t l_size = 0;
         size_t l_link = 0;
+        size_t l_block = 0;
         for (auto const &s: stats)
         {
             l_user = max(l_user, s.user.size());
             l_group = max(l_group, s.group.size());
             l_size = max(l_size, s.size.size());
             l_link = max(l_link, s.link_count.size());
+            l_block += s.block_count;
         }
 
+        cout << "total: " << l_block << endl;
         for (auto const &s : stats)
         {
             cout << s.permissions << " "
@@ -365,7 +369,7 @@ void print_files(vector<string> files, bool long_flag)
             }
         }
 
-        size_t files_per_line = total_width/(max_width + 1);
+        size_t files_per_line = total_width/(max_width + 2);
         size_t files_per_col = 0;
         if (files_per_line != 0)
         {
@@ -377,9 +381,9 @@ void print_files(vector<string> files, bool long_flag)
             files_per_col = files.size();
         }
         
-        files.resize(files_per_line * (files_per_col + 1));
+        files.resize(files_per_line * (files_per_col + 2));
 
-        for (size_t i = 0; i < files_per_col + 1; ++i)
+        for (size_t i = 0; i < files_per_col + 2; ++i)
         {
             for (size_t j = 0; j < files_per_line; ++j)
             {
