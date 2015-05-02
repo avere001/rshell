@@ -1,5 +1,8 @@
+#include <algorithm>
+#include <grp.h>
+#include <pwd.h>
 #include <unistd.h>
-#include<stddef.h>
+#include <stddef.h>
 #include <dirent.h>
 #include <algorithm>
 #include <iostream>
@@ -7,6 +10,8 @@
 #include <iomanip>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <boost/algorithm/string.hpp>
+#include <string>
 
 using namespace std;
 
@@ -17,7 +22,11 @@ struct DirNode
     DirNode(string dirname) : dirname(dirname) {}
     bool operator<(DirNode const &other) const
     {
-        return dirname < other.dirname;
+        string a = dirname;
+        string b = other.dirname;
+        boost::to_upper(a);
+        boost::to_upper(b);
+        return a < b;
     }
 };
 
@@ -109,6 +118,114 @@ void list_dir(string const &d, vector<string> &files, bool all_flag)
     delete prev;
 }
 
+string get_permissions(mode_t m)
+{
+
+    string perms = "-rwxrwxrwx";
+    
+    //set type
+    if (S_ISDIR(m)) perms.at(0) = 'd';
+    if (S_ISBLK(m)) perms.at(0) = 'b';
+    if (S_ISCHR(m)) perms.at(0) = 'c';
+    if (S_ISLNK(m)) perms.at(0) = 'l';
+
+    //set permissions
+    for (int i = 0; i < 9; ++i)
+    {
+        if (((0400 >> i) & m) == 0) perms.at(i+1) = '-';
+    }
+
+    return perms;
+
+}
+
+string get_user(uid_t uid)
+{
+    auto *pw = getpwuid(uid);
+    if (pw == NULL)
+    {
+        perror("getpwuid");
+        return "ERROR";     
+    }
+    string ret = pw->pw_name;
+    return ret;
+}
+
+string get_group(gid_t gid)
+{
+    auto *g = getgrgid(gid);
+    if (g == NULL)
+    {
+        perror("getgrgid");
+        return "ERROR";     
+    }
+    string ret = g->gr_name;
+    return ret;
+}
+
+struct stat_string
+{
+    string permissions;
+    string link_count;
+    string user;
+    string group;
+    string size;
+    string date;
+    //string time_or_year;
+    string name;
+    size_t block_count;
+};
+
+string get_date(time_t t)
+{
+    char c_str_date[256];
+    struct tm *time = localtime(&t);
+    strftime(c_str_date, 256, "%c", time);
+    return c_str_date;
+}
+
+/*string get_time_or_year()
+{
+    char[256] c_str_date;
+    struct time = localtime(t);
+    time_t now = time(0);
+    if (now - t >= 60*60*24*365)
+    {
+        strftime(c_str_date, 256, "%Y", &time);
+    }
+    else
+    {
+        strftime(c_str_date, 256, "", &time);
+    }
+    return c_str_date;
+}
+*/
+void get_stats(vector<string> const &files, vector<stat_string> &stats)
+{
+    for (size_t i = 0; i < files.size(); ++i)
+    {
+        stat_string ss;
+        ss.name = files.at(i);
+        struct stat s;
+        if (stat(files.at(i).c_str(), &s) == -1)
+        {
+            perror("stat");
+            continue;
+        }
+        else
+        {
+            ss.permissions = get_permissions(s.st_mode);
+            ss.link_count = to_string(s.st_nlink);
+            ss.user = get_user(s.st_uid);
+            ss.group = get_group(s.st_gid);
+            ss.size = to_string(s.st_size);
+            ss.date = get_date(s.st_mtime);
+            ss.block_count = s.st_blocks;
+        }
+        stats.push_back(ss);
+    }
+}
+
 /*
  *
  * major functions
@@ -138,48 +255,89 @@ void parse_arguments(int argc, char** argv,
     }
 }
 
+
+bool string_lt(string const &a_, string const &b_)
+{
+    string a = a_;
+    string b = b_;
+    boost::to_upper(a);
+    boost::to_upper(b);
+    return a < b;
+}
+
 //TODO: implement long_flag
 void print_files(vector<string> files, bool long_flag)
 {
-    sort(files.begin(), files.end());
+    sort(files.begin(), files.end(), string_lt);
 
-    size_t total_width = 30;
-    size_t max_width = 0;
-    for (auto &s : files)
+    if (long_flag)
     {
-        if (s.size() > max_width)
+        vector<stat_string> stats;
+        get_stats(files, stats);
+
+        size_t l_user = 0;
+        size_t l_group = 0;
+        size_t l_size = 0;
+        size_t l_link = 0;
+        for (auto const &s: stats)
         {
-            max_width = s.size();
+            l_user = max(l_user, s.user.size());
+            l_group = max(l_group, s.group.size());
+            l_size = max(l_size, s.size.size());
+            l_link = max(l_link, s.link_count.size());
         }
-    }
 
-    size_t files_per_line = total_width/(max_width + 1);
-    size_t files_per_col = 0;
-    if (files_per_line != 0)
-    {
-        files_per_col = files.size() / files_per_line;
-    }
+        for (auto const &s : stats)
+        {
+            cout << s.permissions << " "
+                 << setw(l_link) << s.link_count << " "
+                 << setw(l_user) << s.user << " "
+                 << setw(l_group) << s.group << " "
+                 << setw(l_size) << s.size << " "
+                 << s.date << " "
+                 << s.name << endl;
+        }
+    }           
     else
     {
-        files_per_line = 1;
-        files_per_col = files.size();
-    }
-    
-    files.resize(files_per_line * (files_per_col + 1));
 
-    for (size_t i = 0; i < files_per_col + 1; ++i)
-    {
-        for (size_t j = 0; j < files_per_line; ++j)
+        size_t total_width = 30;
+        size_t max_width = 0;
+        for (auto &s : files)
         {
-            string filename = files.at(j*(files_per_col+1) + i);
-            if (filename != "")
+            if (s.size() > max_width)
             {
-                cout << left << setw(max_width + 1) << filename;
+                max_width = s.size();
             }
         }
-        cout << endl;
-    }
-    
+
+        size_t files_per_line = total_width/(max_width + 1);
+        size_t files_per_col = 0;
+        if (files_per_line != 0)
+        {
+            files_per_col = files.size() / files_per_line;
+        }
+        else
+        {
+            files_per_line = 1;
+            files_per_col = files.size();
+        }
+        
+        files.resize(files_per_line * (files_per_col + 1));
+
+        for (size_t i = 0; i < files_per_col + 1; ++i)
+        {
+            for (size_t j = 0; j < files_per_line; ++j)
+            {
+                string filename = files.at(j*(files_per_col+1) + i);
+                if (filename != "")
+                {
+                    cout << left << setw(max_width + 1) << filename;
+                }
+            }
+            cout << endl;
+        }
+    } 
     
 }
 
