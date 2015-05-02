@@ -1,3 +1,4 @@
+#include "ANSI.h"
 #include <algorithm>
 #include <grp.h>
 #include <pwd.h>
@@ -41,7 +42,11 @@ struct DirNode
 bool is_dir(string file)
 {
     struct stat s;
-    stat(file.c_str(), &s);
+    if (stat(file.c_str(), &s) == -1)
+    {
+        perror("stat");
+        return false;
+    }
     return S_ISDIR(s.st_mode);
 }
 
@@ -265,6 +270,41 @@ bool string_lt(string const &a_, string const &b_)
     return a < b;
 }
 
+bool is_exec(string const &file)
+{
+    struct stat s;
+    if (stat(file.c_str(), &s) == -1)
+    {
+        perror("stat");
+        return false;
+    }
+ 
+    return ((S_IXUSR | S_IXGRP | S_IXOTH) & s.st_mode) != 0;     
+}
+
+void print_colored(string const &file, ssize_t w = 0)
+{
+    if (is_dir(file))
+    {
+        setFG(CYAN);
+    }
+    else if (is_exec(file))
+    {
+        setFG(GREEN);
+    }
+    if (file.at(0) == '.')
+    {
+        setBG(BLACK);
+    }
+
+    
+    ssize_t pad_amt = max(static_cast<ssize_t>(0), w - static_cast<ssize_t>(file.size()));
+    string padding(pad_amt,' ');
+    cout << file;
+    resetColor();
+    cout << padding;
+}
+
 //TODO: implement long_flag
 void print_files(vector<string> files, bool long_flag)
 {
@@ -294,8 +334,9 @@ void print_files(vector<string> files, bool long_flag)
                  << setw(l_user) << s.user << " "
                  << setw(l_group) << s.group << " "
                  << setw(l_size) << s.size << " "
-                 << s.date << " "
-                 << s.name << endl;
+                 << s.date << " ";
+            print_colored(s.name);
+            cout << endl;
         }
     }           
     else
@@ -332,7 +373,7 @@ void print_files(vector<string> files, bool long_flag)
                 string filename = files.at(j*(files_per_col+1) + i);
                 if (filename != "")
                 {
-                    cout << left << setw(max_width + 1) << filename;
+                    print_colored(filename, max_width + 1);
                 }
             }
             cout << endl;
