@@ -10,4 +10,9 @@ ls:
 	mkdir -p bin
 	mv ls bin/
 
+ls_debug:
+	g++ src/ls.cpp -o ls -Wall -Werror -pedantic --std=c++11 -g
+	mkdir -p bin
+	mv ls bin/
+
 
