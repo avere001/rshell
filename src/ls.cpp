@@ -153,8 +153,17 @@ void print_files(vector<string> files, bool long_flag)
         }
     }
 
-    size_t files_per_line = total_width/(max_width + 2);
-    size_t files_per_col = files.size() / files_per_line;
+    size_t files_per_line = total_width/(max_width + 1);
+    size_t files_per_col = 0;
+    if (files_per_line != 0)
+    {
+        files_per_col = files.size() / files_per_line;
+    }
+    else
+    {
+        files_per_line = 1;
+        files_per_col = files.size();
+    }
     
     files.resize(files_per_line * (files_per_col + 1));
 
@@ -162,7 +171,11 @@ void print_files(vector<string> files, bool long_flag)
     {
         for (size_t j = 0; j < files_per_line; ++j)
         {
-            cout << left << setw(max_width + 2) << files.at(j*(files_per_col+1) + i);
+            string filename = files.at(j*(files_per_col+1) + i);
+            if (filename != "")
+            {
+                cout << left << setw(max_width + 1) << filename;
+            }
         }
         cout << endl;
     }
@@ -227,10 +240,18 @@ int main(int argc, char **argv)
         print_files(files, long_flag);
         return 0; 
     }
-//    else if (directories.size() == 0 && !recursive_flag)
-//    {
-//        print the current directory
-//    }
+    else if (directories.size() == 0)
+    {
+        if (!recursive_flag)
+        {
+            list_dir(".", files, all_flag);
+            print_files(files, long_flag);
+        }
+        else
+        {
+            directories.push_back(".");       
+        }
+    }
     
     vector<DirNode> dirvect;
 
