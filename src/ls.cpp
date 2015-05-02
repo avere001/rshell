@@ -387,7 +387,7 @@ void print_files(vector<string> files, bool long_flag)
         {
             for (size_t j = 0; j < files_per_line; ++j)
             {
-                string filename = files.at(j*(files_per_col+1) + i);
+                string filename = files.at(j*(files_per_col+2) + i);
                 if (filename != "")
                 {
                     print_colored(filename, max_width + 1);
