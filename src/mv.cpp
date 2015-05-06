@@ -140,6 +140,7 @@ int main(int argc, char **argv)
         }
         else
         {
+            cout << "error: " << file2 << " exists but is not a directory!" << endl;
             return 1;
         }
     }
