@@ -19,3 +19,11 @@ ls_debug:
 	g++ src/ls.cpp -o ls -Wall -Werror -pedantic --std=c++11 -g
 	mkdir -p bin
 	mv ls bin/
+
+rm:
+	mkdir -p ./bin
+	g++ -Wall -Werror --std=c++11 -pedantic ./src/rm.cpp -o ./bin/rm
+
+mv:
+	mkdir -p ./bin
+	g++ -Wall -Werror --std=c++11 -pedantic ./src/mv.cpp -o ./bin/mv
