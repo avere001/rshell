@@ -5,6 +5,11 @@ rshell:
 	mkdir -p bin
 	mv rshell bin/
 
+rshell-debug:
+	g++ src/main.cpp -o rshell -Wall -Werror -pedantic --std=c++11 -g
+	mkdir -p bin
+	mv rshell bin/
+
 cp:
 	g++ src/cp.cpp -o cp -Wall -Werror -pedantic --std=c++11
 	mkdir -p bin
