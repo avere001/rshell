@@ -21,6 +21,14 @@ void ReadWrite(int argc, char* argv[],int buffsize) {
     fileDescriptR = open(argv[1], O_RDONLY);
     fileDescriptW = open(argv[2], (O_WRONLY | O_CREAT), (S_IWUSR | S_IRUSR));
     
+    if(fileDescriptR == -1) {
+        perror("Read file could not be opened");
+        exit(0);
+    } 
+    if(fileDescriptW == -1) {
+        perror("Write file could not be opened");
+        exit(0);
+    }
 
     ssize_t bytesWritten = 0; 
     while((bytesWritten = read(fileDescriptR, buffer, n)) != 0) {
@@ -33,8 +41,14 @@ void ReadWrite(int argc, char* argv[],int buffsize) {
             exit(0);
         }
     }
-    close(fileDescriptR);
-    close(fileDescriptW);
+    if (close(fileDescriptR) == -1)
+    {
+        perror("close");   
+    }
+    if (close(fileDescriptW) == -1)
+    {
+        perror("close");
+    }
 }
  
  void FileStream() {
@@ -53,17 +67,11 @@ int main(int argc, char* argv[]) {
 
     if(stat(argv[2],&s) != -1) { 
         cerr << "The file to be written to already exists" << endl;
+        perror("stat");
         exit(0);
     }
 
-    if(fileDescriptR == -1) {
-        perror("Read file could not be opened");
-        exit(0);
-    } 
-    if(fileDescriptW == -1) {
-        perror("Write file could not be opened");
-        exit(0);
-    }
+    
     infile.open(argv[1]);
     outfile.open(argv[2]);
     
