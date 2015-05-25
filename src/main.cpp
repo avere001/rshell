@@ -57,8 +57,6 @@ bool parseLine(vector<vector<string>> &args, vector<string> &connectors, string 
         line = line.substr(0,line.find("#"));
     }
 
-    
-
     vector<string> curargs;
     line = replaceAll(line, ";", " ; ");
     line = replaceAll(line, "&&", " && ");
@@ -231,37 +229,82 @@ void redirect(int from, int to)
 //returns pid of command
 pid_t run_command(vector<string> &args, int fdi, int fdo, int fde,int fdother)
 {
-    auto pid = fork();
-    if (pid == -1)
+    if (args.at(0) == "cd")
     {
-        perror("fork:" __FILE__ ":" __S_LINE__);
-        exit(1);
-    }
-    else if (pid == 0)
-    {
-        redirect(fdo, 1);
-        redirect(fdi, 0);
-        redirect(fde, 2);
-        
-        if (fdother != -1 && close(fdother) == -1)
+        if (args.size() > 2)
         {
-            perror("close:" __FILE__ ":" __S_LINE__);
-            exit(1);
+            cerr << "cd: Too many arguments!" << endl;
+            cerr << "usage: cd" << endl;
+            cerr << "usage: cd <path>" << endl;
+            cerr << "usage: cd -" << endl;
+            return -2;
         }
 
-        vector <char *> args_cstr(args.size() + 1);
-        toCStrVector(args_cstr, args); 
-        execvp(args_cstr[0],&args_cstr[0]);
-        
-        //on failure
-        stringstream ss("");
-        ss << "command failed: " <<  args_cstr[0];
-        perror(ss.str().c_str());
-        _exit(errno);
+        string path;
+        bool printpath = false;
+
+        if (args.size() == 1)
+        {    
+            path = getenv("HOME");
+        }
+        else if  (args.at(1) == "-")
+        {
+            path = getenv("OLDPWD");
+            printpath = true;
+        }
+        else
+        {
+            path = args.at(1);
+        }
+
+        if (chdir(path.c_str()) == -1)
+        {
+            perror("cd:" __FILE__ ":" __S_LINE__);
+            return -2;
+        }
+        else
+        {
+            setenv("OLDPWD", getenv("PWD"), true);
+            setenv("PWD", path.c_str(), true);
+            if (printpath) cout << path << endl;
+        }
+        return -1;
+
     }
     else
     {
-        return pid;
+        auto pid = fork();
+        if (pid == -1)
+        {
+            perror("fork:" __FILE__ ":" __S_LINE__);
+            exit(1);
+        }
+        else if (pid == 0)
+        {
+            redirect(fdo, 1);
+            redirect(fdi, 0);
+            redirect(fde, 2);
+            
+            if (fdother != -1 && close(fdother) == -1)
+            {
+                perror("close:" __FILE__ ":" __S_LINE__);
+                exit(1);
+            }
+
+            vector <char *> args_cstr(args.size() + 1);
+            toCStrVector(args_cstr, args); 
+            execvp(args_cstr[0],&args_cstr[0]);
+            
+            //on failure
+            stringstream ss("");
+            ss << "command failed: " <<  args_cstr[0];
+            perror(ss.str().c_str());
+            _exit(errno);
+        }
+        else
+        {
+            return pid;
+        }
     }
 }
 
@@ -468,16 +511,24 @@ void run_commands(vector<vector<string>> &pipecmds, string const &connector, boo
         success = true;
         for (auto pid : pids)
         {
-            int status; 
-            auto error = waitpid(pid, &status, 0);   
-            if (error == -1 )
-            {
-                 perror("waitpid:" __FILE__ ":" __S_LINE__);
-                 success = false;
-            }
-            if (!WIFEXITED(status) || WEXITSTATUS(status) != 0)
+            if (pid == -1); //cd succeeded
+            else if (pid == -2) //cd failed
             {
                 success = false;
+            }
+            else
+            {
+                int status; 
+                auto error = waitpid(pid, &status, 0);   
+                if (error == -1 )
+                {
+                     perror("waitpid:" __FILE__ ":" __S_LINE__);
+                     success = false;
+                }
+                if (!WIFEXITED(status) || WEXITSTATUS(status) != 0)
+                {
+                    success = false;
+                }
             }
         }
 
