@@ -47,6 +47,8 @@ void toCStrVector(vector<char *> &buffer, vector<string> &original)
 // prints the prompt
 // this is displayed before every line that the
 // shell is waiting for user input
+// should be "PWD$" where PWD is the current working directory
+//
 //
 bool printPrompt()
 {
@@ -61,6 +63,70 @@ bool printPrompt()
 
     cout << getenv("PWD") <<  "$ ";
     return true;
+}
+
+//
+// changes directory
+//
+// when passed with no arguments, will cd to HOME
+// when passed with -, will cd to the last directory that was cded to
+// when passed with anything else, cd will attempt to change to that directory
+//
+// @args the arguments to cd. args[0] is always "cd"
+// 
+// returns:
+//      -1: successful
+//      -2: failure
+//
+int run_cd(vector<string> &args)
+{
+    if (args.size() > 2)
+    {
+        cerr << "cd: Too many arguments!" << endl;
+        cerr << "usage: cd" << endl;
+        cerr << "usage: cd <path>" << endl;
+        cerr << "usage: cd -" << endl;
+        return -2;
+    }
+
+    string path;
+    bool printpath = false;
+
+    if (args.size() == 1)
+    {    
+        path = getenv("HOME");
+    }
+    else if  (args.at(1) == "-")
+    {
+        path = getenv("OLDPWD");
+        printpath = true;
+    }
+    else
+    {
+        path = args.at(1);
+    }
+
+    if (chdir(path.c_str()) == -1)
+    {
+        perror("cd:" __FILE__ ":" __S_LINE__);
+        return -2;
+    }
+    else
+    {
+        char *cwd = getcwd(nullptr,0);
+        if (cwd == nullptr)
+        {
+            perror("cwd:" __FILE__ ":" __S_LINE__);
+            return -2;
+        }
+        
+        setenv("OLDPWD", getenv("PWD"), true);
+        setenv("PWD", cwd, true);
+        if (printpath) cout << path << endl;
+        free (cwd);
+    }
+    return -1;
+
 }
 
 //
@@ -81,45 +147,7 @@ pid_t run_command(vector<string> &args, int fdi, int fdo, int fde,int fdother)
 {
     if (args.at(0) == "cd")
     {
-        if (args.size() > 2)
-        {
-            cerr << "cd: Too many arguments!" << endl;
-            cerr << "usage: cd" << endl;
-            cerr << "usage: cd <path>" << endl;
-            cerr << "usage: cd -" << endl;
-            return -2;
-        }
-
-        string path;
-        bool printpath = false;
-
-        if (args.size() == 1)
-        {    
-            path = getenv("HOME");
-        }
-        else if  (args.at(1) == "-")
-        {
-            path = getenv("OLDPWD");
-            printpath = true;
-        }
-        else
-        {
-            path = args.at(1);
-        }
-
-        if (chdir(path.c_str()) == -1)
-        {
-            perror("cd:" __FILE__ ":" __S_LINE__);
-            return -2;
-        }
-        else
-        {
-            setenv("OLDPWD", getenv("PWD"), true);
-            setenv("PWD", path.c_str(), true);
-            if (printpath) cout << path << endl;
-        }
-        return -1;
-
+        return run_cd(args);    
     }
     else
     {
