@@ -18,6 +18,22 @@ using namespace std;
 #include "parsing.h"
 #include "redirection.h"
 
+
+//
+// converts a vector of strings to a vector of c style strings
+//
+//  NOTE: This is a shallow copy, the output c strings will
+//  point to the same place in memory as the original strings
+//
+//  WARNING: never modify the output vector
+//
+//  WARNING: Do not modify the original vector before you are
+//  finished with the c string vector! 
+//  
+//
+//  @buffer     an empty c string vector to fill with the converted strings
+//  @original   a vector of strings to be converted to c strings
+//
 void toCStrVector(vector<char *> &buffer, vector<string> &original)
 {
     for (size_t i = 0; i < original.size(); ++i)
@@ -26,8 +42,13 @@ void toCStrVector(vector<char *> &buffer, vector<string> &original)
     }
     buffer.push_back(NULL);
 }
-    
-bool printPrompt(ostream &os)
+
+//
+// prints the prompt
+// this is displayed before every line that the
+// shell is waiting for user input
+//
+bool printPrompt()
 {
 
     /*char *user_cstr = getlogin();
@@ -38,11 +59,24 @@ bool printPrompt(ostream &os)
     if (host_cstr != 0) host = host_cstr;
     */
 
-    os << getenv("PWD") <<  "$ ";
+    cout << getenv("PWD") <<  "$ ";
     return true;
 }
 
-//returns pid of command
+//
+//  executes a command in a child process
+//
+//  @args       command to run and its argument
+//  @fdi        file descriptor to redirect stdin (use 0 for no redirection)
+//  @fdo        file descriptor to redirect stdout (use 1 for no redirection)
+//  @fde        file descriptor to redirect stderr (use 2 for no redirection
+//  @fdother    file descriptor to redirect to be closed by child (use -1 for no closing)
+//
+//
+//  returns:
+//      pid of command or
+//      -1 for successful cd
+//      -2 for failed cd
 pid_t run_command(vector<string> &args, int fdi, int fdo, int fde,int fdother)
 {
     if (args.at(0) == "cd")
@@ -275,7 +309,7 @@ int main(int argc, char **argv)
     {
 
         string line = "";
-        while ((has_printed || printPrompt(cout)) && getline(cin,line)) {
+        while ((has_printed || printPrompt()) && getline(cin,line)) {
             
             
             vector<vector<string>> argsv;
