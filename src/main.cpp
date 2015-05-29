@@ -7,6 +7,7 @@
 #include <unistd.h>
 #include <vector>
 #include <sstream>
+#include <signal.h>
 
 using namespace std;
 #define S(x) #x
@@ -17,7 +18,7 @@ using namespace std;
 #include "IORedir.h"
 #include "parsing.h"
 #include "redirection.h"
-
+#include "handlers.h"
 
 //
 // converts a vector of strings to a vector of c style strings
@@ -177,7 +178,7 @@ pid_t run_command(vector<string> &args, int fdi, int fdo, int fde,int fdother)
             stringstream ss("");
             ss << "command failed: " <<  args_cstr[0];
             perror(ss.str().c_str());
-            _exit(errno);
+            _exit(1);
         }
         else
         {
@@ -198,7 +199,6 @@ void run_commands(vector<vector<string>> &pipecmds, string const &connector, boo
         )
     {
 
-        vector<pid_t> pids;
         for (auto const &args : pipecmds)
         {
             if (args.at(0) == "exit") exit(0);
@@ -314,24 +314,45 @@ void run_commands(vector<vector<string>> &pipecmds, string const &connector, boo
             else
             {
                 int status; 
-                auto error = waitpid(pid, &status, 0);   
+                pid_t error;
+                
+                //wait until program has closed ignoring EINTR
+                while ((error = waitpid(pid, &status, 0)) == -1 && errno == EINTR);
+                                
                 if (error == -1 )
                 {
-                     perror("waitpid:" __FILE__ ":" __S_LINE__);
-                     success = false;
+                    perror("waitpid:" __FILE__ ":" __S_LINE__);
+                    success = false;
                 }
-                if (!WIFEXITED(status) || WEXITSTATUS(status) != 0)
+                else if (WIFSIGNALED(status))
                 {
+                    success = false;
+                }
+                else if (WIFEXITED(status))
+                {
+                    if (WEXITSTATUS(status) != 0)
+                    {
+                        success = false;
+                    }
+                }
+                else
+                {
+                    cerr << "child program exited abnormally: pid = "  << pid << endl;
                     success = false;
                 }
             }
         }
+        pids.clear();
 
     }
 }
 
 int main(int argc, char **argv)
 {
+    struct sigaction sigact;
+    sigact.sa_handler = sigint_handler;
+    sigaction(SIGINT, &sigact, nullptr);
+
     bool has_printed = false;
     while (true)
     {
