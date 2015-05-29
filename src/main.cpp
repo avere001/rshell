@@ -29,7 +29,16 @@ void toCStrVector(vector<char *> &buffer, vector<string> &original)
     
 bool printPrompt(ostream &os)
 {
-    os << "$ ";
+
+    /*char *user_cstr = getlogin();
+    char *host_cstr = gethostname();
+
+    string user, host;
+    if (user_cstr != 0) user = user_cstr;
+    if (host_cstr != 0) host = host_cstr;
+    */
+
+    os << getenv("PWD") <<  "$ ";
     return true;
 }
 
