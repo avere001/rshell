@@ -8,6 +8,7 @@
 #include <vector>
 #include <sstream>
 #include <signal.h>
+#include <boost/algorithm/string.hpp>
 
 using namespace std;
 #define S(x) #x
@@ -61,8 +62,16 @@ bool printPrompt()
     if (user_cstr != 0) user = user_cstr;
     if (host_cstr != 0) host = host_cstr;
     */
+    
+    string cwd = getenv("PWD");
+    string home = getenv("HOME");
+    if (boost::algorithm::starts_with(cwd,home))
+    {
+        cwd = "~" + cwd.substr(home.size(),cwd.size());
+    }
 
-    cout << getenv("PWD") <<  "$ ";
+    cout << cwd <<  "$ ";
+   
     return true;
 }
 
