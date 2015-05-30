@@ -137,11 +137,36 @@ exit will ignore any arguments passed to it. Additionally any commands connected
 $ exit
 ```
 
+## builtins
+currently the only shell builtin is cd.
+###cd
+cd can be used to change directories
+####usage
+cd home:
+```
+$ cd
+```
 
+cd to path.
+this can be relative or absolute:
+```
+$ cd /
+$ cd bin
+```
 
+finally, to return to last directory:
+```
+cd dir1
+cd ../dir2
+cd - #will take you to dir1
+``` 
 
+## signals
+Currently only supports SIGINT
+
+send SIGINT to a process by pressing CTRL+C in any running program
 
 ## Bugs:
 - There is no way to pass `;`, `&&`, `||`, `&`, `|`, `#`, `>`, `<`,  or whitespace as arguments
 - using >>> will redirect to a file called > rather than error
-- There is no way to change current working directory
+- You cannot redirect the output of cd -
