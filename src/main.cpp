@@ -81,14 +81,14 @@ bool printPrompt()
 //
 int run_cd(vector<string> &args)
 {
-    if (args.size() > 2)
+    /*if (args.size() > 2)
     {
         cerr << "cd: Too many arguments!" << endl;
         cerr << "usage: cd" << endl;
         cerr << "usage: cd <path>" << endl;
         cerr << "usage: cd -" << endl;
         return -2;
-    }
+    }*/
 
     string path;
     bool printpath = false;
