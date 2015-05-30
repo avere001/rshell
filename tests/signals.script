@@ -1,0 +1,185 @@
+Script started on Sat 30 May 2015 03:25:01 AM PDT
+~
+avere001@hammer $ cd rshell
+~/rshell
+avere001@hammer $ bin/rshell
+~/rshell$ ###basic cd
+~/rshell$ #abs paths
+~/rshell$ cd /home/csmahs  js/avere001
+~$ ks && pwd
+command failed: ks: No such file or directory
+~$ ls && pwd
+bin  classes  Desktop  Documents  Downloads  eclipse  gittest  lib  practice  public_html  rshell  test
+/home/csmajs/avere001
+~$ cd /
+/$ ls && ow  pwd
+bin   cgroup  C:\nppdf32Log\debuglog.txt  etc	 home  lib64	   media  mnt  opt   root  selinux  sys  usr
+boot  class   dev			  extra  lib   lost+found  misc   net  proc  sbin  srv	    tmp  var
+/
+/$ #relative paths
+/$ cd
+~$ cd rshell
+~/classes/CS_100/assn/rshell$ ls && pwd
+bin  LICENSE  Makefile	README.md  src	tests
+/home/csmajs/avere001/classes/CS_100/assn/rshell
+~/classes/CS_100/assn/rshell$ ex  cd    cd bin
+~/classes/CS_100/assn/rshell/bin$ ls && pwd
+ls  ls_debug  mv  rm  rshell
+/home/csmajs/avere001/classes/CS_100/assn/rshell/bin
+~/classes/CS_100/assn/rshell/bin$ cd .
+~/classes/CS_100/assn/rshell/bin$ ls && pwd
+ls  ls_debug  mv  rm  rshell
+/home/csmajs/avere001/classes/CS_100/assn/rshell/bin
+~/classes/CS_100/assn/rshell/bin$ cd ..
+~/classes/CS_100/assn/rshell$ ls && pwd d
+bin  LICENSE  Makefile	README.md  src	tests
+/home/csmajs/avere001/classes/CS_100/assn/rshell
+~/classes/CS_100/assn/rshell$ #cd home
+~/classes/CS_100/assn/rshell$ cd
+~$ ls && ow  pwd
+bin  classes  Desktop  Documents  Downloads  eclipse  gittest  lib  practice  public_html  rshell  test
+/home/csmajs/avere001
+~$ #cd -
+~$ cd -
+/home/csmajs/avere001/classes/CS_100/assn/rshell
+~/classes/CS_100/assn/rshell$ ls && pwd
+bin  LICENSE  Makefile	README.md  src	tests
+/home/csmajs/avere001/classes/CS_100/assn/rshell
+~/classes/CS_100/assn/rshell$ cd -
+/home/csmajs/avere001
+~$ ls && ow  pwd
+bin  classes  Desktop  Documents  Downloads  eclipse  gittest  lib  practice  public_html  rshell  test
+/home/csmajs/avere001
+~$ cd -
+/home/csmajs/avere001/classes/CS_100/assn/rshell
+~/classes/CS_100/assn/rshell$ ls && pwd
+bin  LICENSE  Makefile	README.md  src	tests
+/home/csmajs/avere001/classes/CS_100/assn/rshell
+~/classes/CS_100/assn/rshell$ #should status   y in same dir now                            c cd   .
+~/classes/CS_100/assn/rshell$ #should sya  y tay in same dir now
+~/classes/CS_100/assn/rshell$ cd -
+/home/csmajs/avere001/classes/CS_100/assn/rshell
+~/classes/CS_100/assn/rshell$ ls && pwd
+bin  LICENSE  Makefile	README.md  src	tests
+/home/csmajs/avere001/classes/CS_100/assn/rshell
+~/classes/CS_100/assn/rshell$ cd --
+cd:src/main.cpp:121: No such file or directory
+~/classes/CS_100/assn/rshell$ 
+~/classes/CS_100/assn/rshell$ 
+~/classes/CS_100/assn/rshell$ #bad paths
+~/classes/CS_100/assn/rshell$ cd  
+~$ cd /blarg
+cd:src/main.cpp:121: No such file or directory
+~$ cd asdasdasd
+cd:src/main.cpp:121: No such file or directory
+~$ ls && pwd
+bin  classes  Desktop  Documents  Downloads  eclipse  gittest  lib  practice  public_html  rshell  test
+/home/csmajs/avere001
+~$ cd
+~$ 
+~$ 
+~$ #weird paths
+~$ cd /////////////
+/$ ls  pwd
+/
+/$ cd ./././././
+/$ cd
+~$ cd ./././././../avere001
+~$ cd .//////////////////////////
+~$ ls && pwd
+bin  classes  Desktop  Documents  Downloads  eclipse  gittest  lib  practice  public_html  rshell  test
+/home/csmajs/avere001
+~$ per   #permission denied
+~$ who -q
+pgior001 avere001 avere001 jmeji011 cdixi001 jmeji011 jmeji011 avere001 cdixi001 kkimb003 dim005 kkimb003 donei003 donei003 donei003 donei003
+# users=16
+~$ cd /home/csmajs/avere--1    e001        pgior001
+cd:src/main.cpp:121: Permission denied
+~$ pwd
+/home/csmajs/avere001
+~$ ls
+bin  classes  Desktop  Documents  Downloads  eclipse  gittest  lib  practice  public_html  rshell  test
+~$ 
+~$ 
+~$ #extra args
+~$ #will alwys     ways use i first one
+~$ cd /home/csmajs/avere001 / /bin
+~$ pwd
+/home/csmajs/avere001
+~$ l cd rshell / ..
+~/classes/CS_100/assn/rshell$   
+~/classes/CS_100/assn/rshell$ 
+~/classes/CS_100/assn/rshell$ 
+~/classes/CS_100/assn/rshell$ #with connectors
+~/classes/CS_100/assn/rshell$ cd && ls || pwd
+bin  classes  Desktop  Documents  Downloads  eclipse  gittest  lib  practice  public_html  rshell  test
+~$ ls    ls ; cd rshell && pwd
+bin  classes  Desktop  Documents  Downloads  eclipse  gittest  lib  practice  public_html  rshell  test
+/home/csmajs/avere001/classes/CS_100/assn/rshell
+~/classes/CS_100/assn/rshell$ 
+~/classes/CS_100/assn/rshell$ 
+~/classes/CS_100/assn/rshell$ 
+~/classes/CS_100/assn/rshell$ #weird io stuff
+~/classes/CS_100/assn/rshell$ cd
+~$ cd rshell         cd    cd . < src/main.cpp                   cd rshell
+~/classes/CS_100/assn/rshell$ cd . < src/main.cpp | cd | cd > wir  eirdstyff    uff   tuff
+~$ l cat weirdsu tuff
+~$ ls
+bin  classes  Desktop  Documents  Downloads  eclipse  gittest  lib  practice  public_html  rshell  test  weirdstuff
+~$ rm wir  eirdstuff
+~$ ls
+bin  classes  Desktop  Documents  Downloads  eclipse  gittest  lib  practice  public_html  rshell  test
+~$ cd rshell
+~/classes/CS_100/assn/rshell$ clear     
+~/classes/CS_100/assn/rshell$ 
+~/classes/CS_100/assn/rshell$ 
+~/classes/CS_100/assn/rshell$ #e sigin     ## SIGINT
+~/classes/CS_100/assn/rshell$ ps
+  PID TTY          TIME CMD
+21824 pts/9    00:00:00 bash
+25284 pts/9    00:00:00 rshell
+27666 pts/9    00:00:00 ps
+~/classes/CS_100/assn/rshell$ cat  
+testing
+testing
+^C~/classes/CS_100/assn/rshell$ ps
+  PID TTY          TIME CMD
+21824 pts/9    00:00:00 bash
+25284 pts/9    00:00:00 rshell
+27668 pts/9    00:00:00 ps
+~/classes/CS_100/assn/rshell$ 
+~/classes/CS_100/assn/rshell$ c sleep 100s
+^C~/classes/CS_100/assn/rshell$ ps
+  PID TTY          TIME CMD
+21824 pts/9    00:00:00 bash
+25284 pts/9    00:00:00 rshell
+27671 pts/9    00:00:00 ps
+~/classes/CS_100/assn/rshell$ cat | cat | cat
+^C~/classes/CS_100/assn/rshell$ ps
+  PID TTY          TIME CMD
+21824 pts/9    00:00:00 bash
+25284 pts/9    00:00:00 rshell
+27675 pts/9    00:00:00 ps
+~/classes/CS_100/assn/rshell$ 
+~/classes/CS_100/assn/rshell$ #should finish line when done
+~/classes/CS_100/assn/rshell$ cat ; ls
+^Cbin  LICENSE  Makefile	README.md  src	tests
+~/classes/CS_100/assn/rshell$ ps
+  PID TTY          TIME CMD
+21824 pts/9    00:00:00 bash
+25284 pts/9    00:00:00 rshell
+27678 pts/9    00:00:00 ps
+~/classes/CS_100/assn/rshell$ ps  cat | cat ; ls        t ; cat ; ls
+^C^Cbin  LICENSE  Makefile	README.md  src	tests
+~/classes/CS_100/assn/rshell$ ps
+  PID TTY          TIME CMD
+21824 pts/9    00:00:00 bash
+25284 pts/9    00:00:00 rshell
+27701 pts/9    00:00:00 ps
+~/classes/CS_100/assn/rshell$ cat 
+  ^C~/classes/CS_100/assn/rshell$ exit
+~/rshell
+avere001@hammer $ exit
+exit
+
+Script done on Sat 30 May 2015 03:37:44 AM PDT
