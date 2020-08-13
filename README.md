@@ -1,5 +1,5 @@
-# rshell
-A lightweight shell written in CS100
+# Rshell
+A lightweight shell written in C++ for my CS100 course
 
 ## Installing
 To install rshell simply run the following commands in any terminal:
@@ -30,7 +30,7 @@ The format is as follows:
 ```
 $ command1 [arguments1] [connector] [command2] [arguments2] ...
 ```
-####Notes on syntax:
+#### Notes on syntax:
 - Connectors need not be seperated from commands by any whitespace.
 - Connectors must be immediately preceded by a command.
 - Connectors followed immediately by another connector are invalid and will throw an error
@@ -42,13 +42,13 @@ $ command1 [arguments1] [connector] [command2] [arguments2] ...
 - `&&` - runs the command following the connector only if the previously executed command resulted in a success
 - `||` - runs the command following the connector only if the previously executed command resulted in a failure
 
-####Notes:
+#### Notes:
 Commands are evaluated from left to right.
 If a command doesn't exist or otherwise fails to execute, it will result in a failure.
 The exception is that if a command is ignored because of a connector, the success is determined by the previously executed command.
 Otherwise, If the command exists and successfully executes, then the success is determined by the return of the command (0 = success, anything else = failure)
 
-####example:
+#### Example:
 ```
 $ true; echo command executed
 command executed
@@ -67,7 +67,7 @@ be
 chained!
 ```
 
-### output redirection
+### Output redirection
 The output of a command may be redirected to a file like so:
 ```
 $ echo abc123 > test
@@ -90,7 +90,7 @@ abc123
 
 Additionally, you may specify the file descriptor to redirect by using `#>` or `#>>`
 
-### input redirection
+### Input redirection
 You may use a file as input to a command like so:
 ```
 $ echo abc > test
@@ -104,7 +104,7 @@ $ cat <<< test
 test
 ```
 
-### piping
+### Piping
 You may pipe the output of one command to the input of another like so:
 ```
 $ echo test | cat
@@ -124,7 +124,7 @@ TEST
 ### Comments
 Any text on a line following a `#` will be ignored.
 
-####example:
+#### Example:
 ```
 $ echo this won't be ignored #but this will!
 this won't be ignored
@@ -137,11 +137,14 @@ exit will ignore any arguments passed to it. Additionally any commands connected
 $ exit
 ```
 
-## builtins
+## Builtins
 currently the only shell builtin is cd.
-###cd
+
+### cd
 cd can be used to change directories
-####usage
+
+#### Usage
+
 cd home:
 ```
 $ cd
@@ -154,14 +157,14 @@ $ cd /
 $ cd bin
 ```
 
-finally, to return to last directory:
+finally, to go up a directory:
 ```
 cd dir1
 cd ../dir2
 cd - #will take you to dir1
 ``` 
 
-## signals
+## Signals
 Currently only supports SIGINT
 
 send SIGINT to a process by pressing CTRL+C in any running program
